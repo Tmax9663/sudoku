@@ -28,7 +28,7 @@ Visit the live demo of the app: [Sudoku Game App](https://sudoku9.glitch.me/)
 
 ### Installation
 1. Clone the project repository:
-
+[git clone](https://github.com/Tmax9663/sudoku.git)
 ### Usage
 1. Open `index.html` in your web browser.
 2. Click the "New Game" button to start a new Sudoku puzzle.
