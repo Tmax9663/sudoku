@@ -48,7 +48,7 @@ window.addEventListener('load',()=>{
 })
 
 document.querySelector('#newGame').addEventListener('click',()=>{
-    highlight!=highlight;
+    highlight=!highlight;
 })
 
 const showHint=()=>{
@@ -566,7 +566,64 @@ class MusicPlayer {
   musicPlayer.addTrack('background', assetFolder+'/Wallpaper.mp3',0.4);// 
   musicPlayer.addTrack('winning',assetFolder+'/mixkit-video-game-win-2016.wav?v=1692965458940',0.3);
   musicPlayer.addTrack('move', assetFolder+'/clearly.mp3',0.8 ,false);
-//   musicPlayer.addTrack('gameOver', 'Assets/smb_gameover.wav', false);
   musicPlayer.addTrack('select', assetFolder+'/bubbles-single1.wav',0.8, false);
+
+  const solveSudoku=(grid)=>{
+    const size = grid.length;
+    // Find an empty cell (cell with value 0)
+    const emptyCell = findEmptyCell(grid);
+    if (!emptyCell) {
+        return true; // Puzzle solved
+    }
+    const [row, col] = emptyCell;
+    // Try filling the empty cell with digits from 1 to 9
+    for (let num = 1; num <= 9; num++) {
+        if (isValidMove(grid, row, col, num)) {
+            grid[row][col] = num;     
+            if (solveSudoku(grid)) {
+                return true; // Successfully solved
+            }
+            grid[row][col] = 0; // Backtrack
+        }
+    }
+    return false; // No valid number found, backtrack
+}
+
+const findEmptyCell=(grid)=>{
+    const size = grid.length;
+    for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+            if (grid[row][col] === 0) {
+                return [row, col];
+            }
+        }
+    }
+    return null; // All cells filled
+}
+
+const isValidMove=(grid, row, col, num)=>{
+    // Check row and column
+    for (let i = 0; i < 9; i++) {
+        if (grid[row][i] === num || grid[i][col] === num) {
+            return false;
+        }
+    }
+    // Check 3x3 subgrid
+    const startRow = Math.floor(row / 3) * 3;
+    const startCol = Math.floor(col / 3) * 3;
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (grid[startRow + i][startCol + j] === num) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+const solve=()=>{
+    let solveGrid=sudokuPuzzle;
+    solveSudoku(solveGrid);
+    console.log('solve',solveGrid);
+}
   
-  //musicPlayer.pauseAll();
