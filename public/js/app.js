@@ -162,7 +162,7 @@ const  generatePuzzle=(originalGrid,sudokuPuzzle)=> {
     // Add event listeners to each <td> cell
     document.querySelectorAll("#sudoku-grid td").forEach(cell => {
         cell.addEventListener("click", () => {
-            if(highlight) highlightRowsAndColumns(cell);
+            highlightRowsAndColumns(cell);
         });
     });
 
@@ -195,7 +195,7 @@ const highlightRowsAndColumns=(clickedCell)=>{
     document.querySelectorAll("#sudoku-grid td").forEach(cell => {
         cell.classList.remove("highlight-row", "highlight-col");
     });
-
+    if(!highlight) return;
     // Highlight the entire row
     const rowCells = Array.from(clickedCell.parentElement.cells); // Convert to array
     rowCells.forEach(cell => {
