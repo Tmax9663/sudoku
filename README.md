@@ -9,6 +9,7 @@ Welcome to the Sudoku Game App! This app allows you to play Sudoku puzzles and c
   - [Installation](#installation)
   - [Usage](#usage)
 - [Game Instructions](#game-instructions)
+- [Hint Feature](#hint-feature)
 - [High Scores](#high-scores)
 - [Contributing](#contributing)
 - [License](#license)
@@ -44,6 +45,18 @@ Visit the live demo of the app: [Sudoku Game App](https://sudoku9.glitch.me/)
 - Use the "Hint" button for a helpful hint on the next move.
 - The timer will start when you begin a new game.
 - Win the game by correctly filling the entire grid.
+
+## Hint Feature
+Get unstuck and sharpen your Sudoku-solving skills with the "Hint" feature! Need help with a tough puzzle? Just click "Hint," and watch as the game reveals a valid number for an empty cell. This single tip can provide the inspiration you need to crack the puzzle wide open.
+
+How to Use: 
+- Open your Sudoku puzzle. 
+- When faced with a challenging cell, hit "Hint." 
+- Apply the hint strategically to keep the challenge alive while getting back on track.
+
+Note: Hints offer a nudge in the right direction without giving away the whole solution. They're the perfect tool to hone your Sudoku intuition and make steady progress.
+
+With the "Hint" feature in your toolkit, no Sudoku puzzle is too tough to conquer. Whether you're a newcomer or a seasoned player, this helper ensures you're always in the game. Happy Sudoku solving!
 
 ## High Scores
 - View the top high scores on the high score board.
