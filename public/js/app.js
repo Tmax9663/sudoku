@@ -14,6 +14,9 @@ let highlight=false;
 let randomDifficulty;
 let levelState;
 let highScoresLoaded;
+let emptyCells=[];
+let hintCells=[];
+let tempHintCells=[];
 //const assetFolder='https://cdn.glitch.global/ca5aa811-8109-4d0b-bfe3-c16115da55f4';
 const assetFolder='../resources';
 const url='.';
@@ -29,9 +32,11 @@ window.addEventListener('load',()=>{
     document.querySelectorAll(".btnNumber").forEach(btn => {
         btn.addEventListener("click", (e) => {
             currentNumber=e.target.textContent;
-          musicPlayer.playTrack('select');
+            musicPlayer.playTrack('select');
             if(inp_click){
-                document.querySelector('#'+currentId).value=currentNumber;
+                let clickNow=document.querySelector('#'+currentId);
+                clickNow.value=currentNumber;
+                hintCells = hintCells.filter(p => !(p[0] === parseInt(clickNow.getAttribute('row')) && p[1] === parseInt(clickNow.getAttribute('col'))));
                 inp_click=false;
             }
             e.target.style.backgroundColor="#f00";
@@ -44,7 +49,6 @@ window.addEventListener('load',()=>{
         })
     })
   }
-  
 })
 
 document.querySelector('#newGame').addEventListener('click',()=>{
@@ -52,15 +56,28 @@ document.querySelector('#newGame').addEventListener('click',()=>{
 })
 
 const showHint=()=>{
-    if(originalGrid){
-        table.style.display = 'none';
-        tableHide.style.display = 'inline-block';
-        setTimeout(()=> {
-            tableHide.style.display = 'none';
-            table.style.display = 'inline-block';
-        }, 500);
+    // if(originalGrid){
+    //     table.style.display = 'none';
+    //     tableHide.style.display = 'inline-block';
+    //     setTimeout(()=> {
+    //         tableHide.style.display = 'none';
+    //         table.style.display = 'inline-block';
+    //     }, 500);
+    // }
+    if(hintCells.length>0){    
+        const randomHint=hintCells[generateRandomNumber(0,hintCells.length-1)];
+        function getInputElement(row, col) {
+            const inputId = `inp_${row}_${col}`;
+            return document.getElementById(inputId);
+        }
+        const inputElement = getInputElement(randomHint[0],randomHint[1]);
+        inputElement.value=randomHint[2];
+        inputElement.style.color='#fc0';
+        hintCells = hintCells.filter(p => !(p[0] === randomHint[0] && p[1] === randomHint[1]));
     }
 }
+
+
 // Function to start the game and timer
 const startGame=(min,max,level)=>{
     levelState=level;
@@ -70,6 +87,8 @@ const startGame=(min,max,level)=>{
     let newGrid = generateSudokuPuzzle(randomDifficulty);
     originalGrid = newGrid.originalGrid;
     sudokuPuzzle = newGrid.puzzleGrid;
+    hintCells = newGrid.hintCells;
+    tempHintCells=hintCells;
     generatePuzzle(originalGrid,sudokuPuzzle);
     document.getElementById("timer").style.visibility = "visible";
     document.querySelector('#btndiv').style.visibility="visible";
@@ -111,6 +130,7 @@ const generateRandomNumber=(min, max)=>{
 
 const clearPuzzle=()=>{
     generatePuzzle(originalGrid,sudokuPuzzle);
+    hintCells=tempHintCells;
 }
 
 // Generate a Sudoku grid
@@ -127,7 +147,10 @@ const  generatePuzzle=(originalGrid,sudokuPuzzle)=> {
             } else {
                 const input = document.createElement("input");
                 input.className = "sudoku-input";
-                input.id="inp_"+k;
+                //input.id="inp_"+k;
+                input.id=`inp_${i}_${j}`;
+                input.setAttribute("row",i);
+                input.setAttribute("col",j);
                 input.setAttribute("readonly", "readonly"); 
                 k++;
                 cell.appendChild(input);
@@ -155,8 +178,8 @@ const  generatePuzzle=(originalGrid,sudokuPuzzle)=> {
     }
     document.querySelectorAll(".sudoku-input").forEach(inp => {
         inp.addEventListener('click',(e)=>{
-            console.log('inp',e.target.id)
-          musicPlayer.playTrack('move');
+            // console.log('inp',e.target.id)
+            musicPlayer.playTrack('move');
             currentId=e.target.id;
             inp_click=true;
         })
@@ -294,6 +317,7 @@ const generateValidSudokuGrid=()=>{
 
 const generateSudokuPuzzle=(difficulty)=>{
     const size = 9;
+    hintCells=[];
     const originalGrid = generateValidSudokuGrid(); // Generate a valid Sudoku grid
     const puzzleGrid = JSON.parse(JSON.stringify(originalGrid)); // Clone the original grid
     // Function to remove cells from the grid
@@ -304,6 +328,7 @@ const generateSudokuPuzzle=(difficulty)=>{
             const row = Math.floor(Math.random() * size);
             const col = Math.floor(Math.random() * size);
             if(puzzleGrid[row][col] !== 0) {
+                hintCells.push([row,col,puzzleGrid[row][col]]);
                 puzzleGrid[row][col] = 0;
                 cellsRemoved++;
             }
@@ -312,11 +337,13 @@ const generateSudokuPuzzle=(difficulty)=>{
     removeCells(difficulty);
     return {
         originalGrid,
-        puzzleGrid
+        puzzleGrid,
+        hintCells
     };
 }
 // Function to check if the player has won the game
 const autoCheckWin=()=>{
+  //  console.log('isValidSudoku',currentGrid);
     const table = document.getElementById("sudoku-grid");
     const rows = table.getElementsByTagName("tr");
     const grid = [];
@@ -338,7 +365,6 @@ const autoCheckWin=()=>{
         }
         grid.push(row);
     }
-    //console.log('isValidSudoku',grid,isValidSudoku(grid))
     return isValidSolution(grid);
 }
 // Function to continuously check for win
@@ -424,7 +450,7 @@ const submitScore=()=>{
     let second=pad2(d.getSeconds());
     let timestamp=year+month+day+"_"+hour+minute+second;    
     if (userName && !isNaN(userScore)) {
-        saveUserScore(userName,userScore ,sudokuPuzzle, currentGrid,levelState,timestamp);
+        saveUserScore(userName,userScore ,sudokuPuzzle, currentGrid,tempHintCells,levelState,timestamp);
         setTimeout(updateHighScoreBoard(),1000);
         document.getElementById('user-name').value='';
         musicPlayer.pauseAll();
@@ -463,16 +489,16 @@ const updateHighScoreBoard=()=>{
     document.getElementById('expert-high-score-list').innerHTML='';
     highScores.map(score => {
         if(score.level==='Easy'){
-            document.getElementById('easy-high-score-list').innerHTML+=`<li><button class="scoreBtn" onclick="loadPuzzle(${score.id})">Load</button><span class="scoreName">${score.name}: </span><span class="scoreResult">${score.score}</span></li>`;
+            document.getElementById('easy-high-score-list').innerHTML+=`<li><button class="scoreBtn" onclick="loadPuzzle('${score.id}')">Load</button><span class="scoreName">${score.name}: </span><span class="scoreResult">${score.score}</span></li>`;
         }
         if(score.level==='Medium'){
-            document.getElementById('medium-high-score-list').innerHTML+=`<li><button class="scoreBtn" onclick="loadPuzzle(${score.id})">Load</button><span class="scoreName">${score.name}: </span><span class="scoreResult">${score.score}</span></li>`;
+            document.getElementById('medium-high-score-list').innerHTML+=`<li><button class="scoreBtn" onclick="loadPuzzle('${score.id}')">Load</button><span class="scoreName">${score.name}: </span><span class="scoreResult">${score.score}</span></li>`;
         }
         if(score.level==='Hard'){
-            document.getElementById('hard-high-score-list').innerHTML+=`<li><button class="scoreBtn" onclick="loadPuzzle(${score.id})">Load</button><span class="scoreName">${score.name}: </span><span class="scoreResult">${score.score}</span></li>`;
+            document.getElementById('hard-high-score-list').innerHTML+=`<li><button class="scoreBtn" onclick="loadPuzzle('${score.id}')">Load</button><span class="scoreName">${score.name}: </span><span class="scoreResult">${score.score}</span></li>`;
         }
         if(score.level==='Expert'){
-            document.getElementById('expert-high-score-list').innerHTML+=`<li><button class="scoreBtn" onclick="loadPuzzle(${score.id})">Load</button><span class="scoreName">${score.name}: </span><span class="scoreResult">${score.score}</span></li>`;
+            document.getElementById('expert-high-score-list').innerHTML+=`<li><button class="scoreBtn" onclick="loadPuzzle('${score.id}')">Load</button><span class="scoreName">${score.name}: </span><span class="scoreResult">${score.score}</span></li>`;
         }
     })
 }
@@ -483,6 +509,7 @@ const loadPuzzle=(id)=>{
     if(index>=0){
         sudokuPuzzle=JSON.parse(highScoresLoaded[index].puzzle);
         originalGrid=JSON.parse(highScoresLoaded[index].result);
+        tempHintCells=JSON.parse(highScoresLoaded[index].hint)
         levelState=highScoresLoaded[index].level;
         document.querySelector('#newGame').innerHTML=levelState;
         document.getElementById("timer").style.visibility = "visible";
@@ -492,7 +519,7 @@ const loadPuzzle=(id)=>{
 }
 
 // Save user score to the database
-const saveUserScore=(name, score,puzzle,result,level,remark)=>{
+const saveUserScore=(name, score,puzzle,result,hint,level,remark)=>{
     fetch(`${url}/api/post`, {
         method: 'POST',
         headers: {
@@ -503,6 +530,7 @@ const saveUserScore=(name, score,puzzle,result,level,remark)=>{
         score:score.toString(),
         puzzle:JSON.stringify(puzzle),
         result:JSON.stringify(result),
+        hint:JSON.stringify(hint),
         level:level,
         remark:remark
       })
@@ -550,7 +578,7 @@ class MusicPlayer {
       }
     }
     pauseAll() {
-      console.log('pause')
+      //console.log('pause')
       for(const audio of this.tracks.values()) {
         try {
           audio.pause()
@@ -566,26 +594,38 @@ class MusicPlayer {
   musicPlayer.addTrack('background', assetFolder+'/Wallpaper.mp3',0.4);// 
   musicPlayer.addTrack('winning',assetFolder+'/mixkit-video-game-win-2016.wav?v=1692965458940',0.3);
   musicPlayer.addTrack('move', assetFolder+'/clearly.mp3',0.8 ,false);
+//   musicPlayer.addTrack('gameOver', 'Assets/smb_gameover.wav', false);
   musicPlayer.addTrack('select', assetFolder+'/bubbles-single1.wav',0.8, false);
+  
+  //musicPlayer.pauseAll();
 
   const solveSudoku=(grid)=>{
     const size = grid.length;
+    
     // Find an empty cell (cell with value 0)
     const emptyCell = findEmptyCell(grid);
+    console.log('empty',emptyCell);
+    
     if (!emptyCell) {
         return true; // Puzzle solved
     }
+    
     const [row, col] = emptyCell;
+    
     // Try filling the empty cell with digits from 1 to 9
     for (let num = 1; num <= 9; num++) {
         if (isValidMove(grid, row, col, num)) {
-            grid[row][col] = num;     
+            grid[row][col] = num;
+            
             if (solveSudoku(grid)) {
+                emptyCells.push([row,col,num]); // best
                 return true; // Successfully solved
             }
+            
             grid[row][col] = 0; // Backtrack
         }
     }
+    
     return false; // No valid number found, backtrack
 }
 
@@ -608,6 +648,7 @@ const isValidMove=(grid, row, col, num)=>{
             return false;
         }
     }
+    
     // Check 3x3 subgrid
     const startRow = Math.floor(row / 3) * 3;
     const startCol = Math.floor(col / 3) * 3;
@@ -622,8 +663,9 @@ const isValidMove=(grid, row, col, num)=>{
 }
 
 const solve=()=>{
+    emptyCells=[];
     let solveGrid=sudokuPuzzle;
     solveSudoku(solveGrid);
-    console.log('solve',solveGrid);
+    emptyCells.reverse();
+    console.log('solve',emptyCells,solveGrid);
 }
-  
