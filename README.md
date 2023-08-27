@@ -47,21 +47,21 @@ Visit the live demo of the app: [Sudoku Game App](https://sudoku9.glitch.me/)
 - Win the game by correctly filling the entire grid.
 
 ## Hint Feature
-Get unstuck and sharpen your Sudoku-solving skills with the "Hint" feature! Need help with a tough puzzle? 
-Just click "Hint," and watch as the game reveals a valid number for an empty cell randomly. 
-This single tip can provide the inspiration you need to crack the puzzle wide open.
+- Get unstuck and sharpen your Sudoku-solving skills with the "Hint" feature! Need help with a tough puzzle? 
+- Just click "Hint," and watch as the game reveals a valid number for an empty cell randomly. 
+- This single tip can provide the inspiration you need to crack the puzzle wide open.
 
 How to Use: 
 - Open your Sudoku puzzle. 
 - When faced with a challenging cell, hit "Hint." 
 - Apply the hint strategically to keep the challenge alive while getting back on track.
 
-Note: Hints offer a nudge in the right direction without giving away the whole solution. 
-They're the perfect tool to hone your Sudoku intuition and make steady progress.
+- Note: Hints offer a nudge in the right direction without giving away the whole solution. 
+- They're the perfect tool to hone your Sudoku intuition and make steady progress.
 
-With the "Hint" feature in your toolkit, no Sudoku puzzle is too tough to conquer. 
-Whether you're a newcomer or a seasoned player, this helper ensures you're always in the game. 
-Happy Sudoku solving!
+- With the "Hint" feature in your toolkit, no Sudoku puzzle is too tough to conquer. 
+- Whether you're a newcomer or a seasoned player, this helper ensures you're always in the game. 
+- Happy Sudoku solving!
 
 ## High Scores
 - View the top high scores on the high score board.
