@@ -28,7 +28,6 @@ function findById(id) {
 function create(Data) {
     return new Promise((resolve, reject) => {
         const newData = {id: uuidv4(), ...Data}    
-        //const newData = {id: (db.length+1).toString(), ...Data}
         db.push(newData)
         if (process.env.NODE_ENV !== 'test') {
             writeDataToFile(dbFile, db);

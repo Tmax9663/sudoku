@@ -12,6 +12,7 @@ body{
     border-collapse: collapse;
     border: 1px solid black;
 }
+
 td {
     width: 50px;
     height: 35px;
@@ -19,6 +20,7 @@ td {
     font-size: 20px;
     border: 1px solid #558787;
     border-width: 1px 0 0 1px;
+    cursor: pointer;
 }
 
 /* Add a thicker border to the right and bottom of the 3x3 grid cells */
@@ -56,7 +58,6 @@ input{
         height: 40px;
         font-size: 20px;
     }
-   
 }
 #topDiv{
     display : flex ;
@@ -64,6 +65,7 @@ input{
     align-items :center ;
     flex-direction: row;
     max-width: 330px;
+    /* margin-top: 5px; */
 }
 button {
     font-size: 14px;
@@ -96,12 +98,13 @@ td.active {
     justify-content: space-around;
     margin-top: 10px;
     visibility: hidden;
-    width: 100%;    
+    width: 100%;
+    
 }
 .btnNumber{
     flex-basis: calc(10% - 6px);
     border: 1px solid #222;
-    background-color: #558787;
+    background-color: #558787; 
     text-align: center;
     cursor: pointer;
     border-radius: 3px;
@@ -135,21 +138,21 @@ td.active {
     }
     to {
         opacity: 1;
-    } 
+    }
+    
 }
-
 @keyframes highlightWin {
     from {
         background-color: #333;
     }
     to {
-        background-color: #dcdcdc; /* Green background for highlight */
+        background-color: #dcdcdc; /* lite white background for highlight */
     }
 }
 
 /* Add the animation to the class that triggers the highlight */
 .sudoku-input.highlight-win {
-    animation: highlightWin 2s ease-in-out 3;
+    animation: highlightWin 2s ease-in-out infinite;
 }
 
 /* Styling for the modals */
@@ -203,7 +206,7 @@ td.active {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    margin: 5px;
+margin: 5px;
 }
 #scoreBoard{
     display: flex;
@@ -255,4 +258,11 @@ li:hover{
 }
 .scoreBtn:hover{
     background-color: darkolivegreen;
+}
+#userScore{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    line-height: 2;
 }

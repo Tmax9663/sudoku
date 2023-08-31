@@ -1,6 +1,8 @@
-const table = document.getElementById("sudoku-grid");
-const tableHide = document.getElementById("sudoku-grid-hide");
+const sudokuGrid = document.getElementById("sudoku-grid");
 const newGameModal=document.querySelector('#newGameModal');
+const btnHint=document.querySelector('#btnHint');
+const btnReplay=document.querySelector('#btnReplay');
+const speakerSwitch=document.querySelector('#speakerSwitch');
 let sudokuPuzzle, originalGrid;
 let startTime;
 let timerInterval;
@@ -17,13 +19,20 @@ let highScoresLoaded;
 let emptyCells=[];
 let hintCells=[];
 let tempHintCells=[];
+let hintCount;
+const maxHintCount=5;
+let soundOn=true;
 //const assetFolder='https://cdn.glitch.global/ca5aa811-8109-4d0b-bfe3-c16115da55f4';
 const assetFolder='../resources';
 const url='.';
 
 window.addEventListener('load',()=>{
   loadHighScores();  
-  musicPlayer.playTrack('background1');
+  btnHint.disabled = true;
+  btnHint.style.color='#666';
+  btnReplay.disabled = true;
+  btnReplay.style.color='#666';
+  musicPlayer.playTrack('background');
   for(let i=1;i<=9;i++){
     const div = document.createElement("div");
     div.className="btnNumber";
@@ -35,8 +44,11 @@ window.addEventListener('load',()=>{
             musicPlayer.playTrack('select');
             if(inp_click){
                 let clickNow=document.querySelector('#'+currentId);
+                const pos=currentId.split('_');
+                const row = parseInt(pos[1]);
+                const col = parseInt(pos[2]);
                 clickNow.value=currentNumber;
-                hintCells = hintCells.filter(p => !(p[0] === parseInt(clickNow.getAttribute('row')) && p[1] === parseInt(clickNow.getAttribute('col'))));
+                hintCells = hintCells.filter(p => !(p[0] === row && p[1] === col));
                 inp_click=false;
             }
             e.target.style.backgroundColor="#f00";
@@ -56,15 +68,7 @@ document.querySelector('#newGame').addEventListener('click',()=>{
 })
 
 const showHint=()=>{
-    // if(originalGrid){
-    //     table.style.display = 'none';
-    //     tableHide.style.display = 'inline-block';
-    //     setTimeout(()=> {
-    //         tableHide.style.display = 'none';
-    //         table.style.display = 'inline-block';
-    //     }, 500);
-    // }
-    if(hintCells.length>0){    
+    if(hintCells.length>0 && hintCount>0){    
         const randomHint=hintCells[generateRandomNumber(0,hintCells.length-1)];
         function getInputElement(row, col) {
             const inputId = `inp_${row}_${col}`;
@@ -74,15 +78,26 @@ const showHint=()=>{
         inputElement.value=randomHint[2];
         inputElement.style.color='#fc0';
         hintCells = hintCells.filter(p => !(p[0] === randomHint[0] && p[1] === randomHint[1]));
+        hintCount--;
+        btnHint.innerHTML='Hint '+hintCount;
+        if(hintCount===0){
+            btnHint.disabled = true;
+            btnHint.style.color='#666';
+        }
     }
 }
-
 
 // Function to start the game and timer
 const startGame=(min,max,level)=>{
     levelState=level;
+    hintCount=maxHintCount;
+    btnHint.disabled =false;
+    btnHint.style.color='#eee';
+    btnHint.innerHTML='Hint '+hintCount;
+    btnReplay.disabled =false;
+    btnReplay.style.color='#eee';
     musicPlayer.pauseAll();
-    musicPlayer.playTrack('background');
+    if(soundOn) musicPlayer.playTrack('background');
     randomDifficulty = generateRandomNumber(min,max);
     let newGrid = generateSudokuPuzzle(randomDifficulty);
     originalGrid = newGrid.originalGrid;
@@ -128,16 +143,21 @@ const generateRandomNumber=(min, max)=>{
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const clearPuzzle=()=>{
+const replayPuzzle=()=>{
     generatePuzzle(originalGrid,sudokuPuzzle);
     hintCells=tempHintCells;
+    hintCount=maxHintCount;
+    btnHint.disabled =false;
+    btnHint.style.color='#eee';
+    btnHint.innerHTML='Hint '+hintCount;
+    btnReplay.disabled =false;
+    btnReplay.style.color='#eee';
 }
 
 // Generate a Sudoku grid
 const  generatePuzzle=(originalGrid,sudokuPuzzle)=> {
     if(typeof(sudokuPuzzle)==='undefined') return;
-    table.innerHTML = "";
-    let k=0;
+    sudokuGrid.innerHTML = "";
     for(let i = 0; i < 9; i++) {
         const row = document.createElement("tr");
         for(let j = 0; j < 9; j++) {
@@ -147,17 +167,13 @@ const  generatePuzzle=(originalGrid,sudokuPuzzle)=> {
             } else {
                 const input = document.createElement("input");
                 input.className = "sudoku-input";
-                //input.id="inp_"+k;
                 input.id=`inp_${i}_${j}`;
-                input.setAttribute("row",i);
-                input.setAttribute("col",j);
                 input.setAttribute("readonly", "readonly"); 
-                k++;
                 cell.appendChild(input);
             }
             row.appendChild(cell);
         }
-        table.appendChild(row);
+        sudokuGrid.appendChild(row);
     }
     // Add event listeners to each <td> cell
     document.querySelectorAll("#sudoku-grid td").forEach(cell => {
@@ -166,19 +182,8 @@ const  generatePuzzle=(originalGrid,sudokuPuzzle)=> {
         });
     });
 
-    tableHide.innerHTML = "";
-    for(let i = 0; i < 9; i++) {
-        const row = document.createElement("tr");
-        for(let j = 0; j < 9; j++) {
-            const cell = document.createElement("td");
-            cell.textContent = originalGrid[i][j];
-            row.appendChild(cell);
-        }
-        tableHide.appendChild(row);
-    }
     document.querySelectorAll(".sudoku-input").forEach(inp => {
         inp.addEventListener('click',(e)=>{
-            // console.log('inp',e.target.id)
             musicPlayer.playTrack('move');
             currentId=e.target.id;
             inp_click=true;
@@ -343,9 +348,8 @@ const generateSudokuPuzzle=(difficulty)=>{
 }
 // Function to check if the player has won the game
 const autoCheckWin=()=>{
-  //  console.log('isValidSudoku',currentGrid);
-    const table = document.getElementById("sudoku-grid");
-    const rows = table.getElementsByTagName("tr");
+    const sudokuGrid = document.getElementById("sudoku-grid");
+    const rows = sudokuGrid.getElementsByTagName("tr");
     const grid = [];
     currentGrid=[];
     for(let i = 0; i < rows.length; i++) {
@@ -373,7 +377,7 @@ const checkForAutoWin=()=>{
     if(isWin && newGame) {
         musicPlayer.pauseAll();
         musicPlayer.playTrack('winning');
-        alert("Congratulations! You've solved the Sudoku puzzle!");
+        // alert("Congratulations! You've solved the Sudoku puzzle!");
         blinkBoard();        
         newGame = false;
         isWin=false;
@@ -390,42 +394,13 @@ const blinkBoard=()=>{
 // Call the checkForAutoWin function at an interval (e.g., every second)
 setInterval(checkForAutoWin, 1000);
 
-const isValidSudoku=(rows)=>{ 
-    const rowSet = new Set();
-    const columnSet = new Set();
-    const boxSet = new Set(); 
-    for (let i = 0; i < rows.length; i++) {
-        const row = rows[i] 
-        for (let j = 0; j < row.length; j++) {
-            const rowNumber = row[j]; 
-            const columnNumber = rows[j][i];
-            const boxCharacter = rows[3 * Math.floor(i / 3)+ Math.floor(j / 3)][((i * 3) % 9) + (j % 3)] ;
-            if (rowNumber !== ".") { 
-                if (rowSet.has(rowNumber)) return false 
-                rowSet.add(rowNumber) 
-            }
-            if (columnNumber !== ".") { 
-                if (columnSet.has(columnNumber)) return false 
-                columnSet.add(columnNumber) 
-            }
-            if (boxCharacter !== ".") {
-                if (boxSet.has(boxCharacter)) return false 
-                boxSet.add(boxCharacter) 
-            }
-        }
-        rowSet.clear(); 
-        columnSet.clear(); 
-        boxSet.clear();
-    }
-    return true;
-} 
-
 const startNewGame=()=>{
     newGameModal.style.display="block";
 }
 // Open the user input modal
 const openModal=()=>{
     const modal = document.getElementById('userInputModal');
+    document.querySelector('#score').textContent="Your score : "+document.getElementById('user-score').textContent;
     modal.style.display = 'block';
 }
 
@@ -434,12 +409,16 @@ const closeModal=()=>{
     const modals = document.querySelectorAll('.modal');
     modals.forEach(modal => {
         modal.style.display = 'none';
+        if(modal.id==='userInputModal'){
+            musicPlayer.stopTrack('winning')
+        }
     });   
 }
 
 // Submit user's score
 const submitScore=()=>{
     const userName = document.getElementById('user-name').value;
+    if(userName==='' ||  document.querySelector('#score').textContent==='0') return;
     const userScore = parseInt(document.getElementById('user-score').textContent);
     let d = convertTZ(new Date());
     let year=d.getFullYear();
@@ -454,7 +433,7 @@ const submitScore=()=>{
         setTimeout(updateHighScoreBoard(),1000);
         document.getElementById('user-name').value='';
         musicPlayer.pauseAll();
-        musicPlayer.playTrack('background1');
+        if(soundOn) musicPlayer.playTrack('background');
         closeModal();
     }
 }
@@ -514,7 +493,7 @@ const loadPuzzle=(id)=>{
         document.querySelector('#newGame').innerHTML=levelState;
         document.getElementById("timer").style.visibility = "visible";
         document.querySelector('#btndiv').style.visibility="visible";
-        clearPuzzle();    
+        replayPuzzle();    
     }
 }
 
@@ -559,49 +538,70 @@ const loadHighScores=()=>{
 //Music Class
 class MusicPlayer {
     constructor() {
-      this.tracks = new Map()
+      this.tracks = new Map();
     }
-    addTrack(name, url, volume,loop = true) {
+
+    addTrack(name, url, volume, loop = true) {
       const audio = new Audio();
-      audio.volume=volume;
+      audio.volume = volume;
       audio.loop = loop;
       audio.src = url;
-      this.tracks.set(name, audio)
+      this.tracks.set(name, audio);
     }
+
     playTrack(name) {
       const audio = this.tracks.get(name);
       try {
         audio.play();
-        //return audio;
       } catch(e) {
-        // console.log(e);
+        console.log(e);
       }
     }
+
     pauseAll() {
-      //console.log('pause')
       for(const audio of this.tracks.values()) {
         try {
-          audio.pause()
+          audio.pause();
         } catch(e) {
           console.log(e);
         }
       }
     }
-  }
-  //Music Class
-  const musicPlayer = new MusicPlayer();
-  musicPlayer.addTrack('background1', assetFolder+'/Komiku_-_13_-_Good_Fellow.mp3?v=1692965241859',0.5);// 
-  musicPlayer.addTrack('background', assetFolder+'/Wallpaper.mp3',0.4);// 
-  musicPlayer.addTrack('winning',assetFolder+'/mixkit-video-game-win-2016.wav?v=1692965458940',0.3);
-  musicPlayer.addTrack('move', assetFolder+'/clearly.mp3',0.8 ,false);
-//   musicPlayer.addTrack('gameOver', 'Assets/smb_gameover.wav', false);
-  musicPlayer.addTrack('select', assetFolder+'/bubbles-single1.wav',0.8, false);
-  
-  //musicPlayer.pauseAll();
 
-  const solveSudoku=(grid)=>{
+    stopTrack(name) {
+      const audio = this.tracks.get(name);
+      if (audio) {
+        try {
+          audio.pause();
+          audio.currentTime = 0;
+        } catch(e) {
+          console.log(e);
+        }
+      }
+    }
+}
+
+const musicPlayer = new MusicPlayer();
+musicPlayer.addTrack('background', assetFolder+'/Komiku_-_13_-_Good_Fellow.mp3?v=1692965241859',0.3);// 
+musicPlayer.addTrack('winning',assetFolder+'/mixkit-video-game-win-2016.wav?v=1692965458940',0.3);
+musicPlayer.addTrack('move', assetFolder+'/clearly.mp3',0.8 ,false);
+musicPlayer.addTrack('select', assetFolder+'/bubbles-single1.wav',0.8, false);
+speakerSwitch.addEventListener('click',()=>{
+    soundOn=!soundOn;
+    if(!soundOn){
+        // Stop track1 after 1 seconds
+        setTimeout(() => {
+            musicPlayer.stopTrack("background");
+        }, 1000);
+        speakerSwitch.innerHTML='&#x1f507';
+    } else{
+        musicPlayer.playTrack('background');
+        speakerSwitch.innerHTML='&#x1f50a;';
+    }
+})
+  // auto solveSudoku 
+const solveSudoku=(grid)=>{
     const size = grid.length;
-    
     // Find an empty cell (cell with value 0)
     const emptyCell = findEmptyCell(grid);
     console.log('empty',emptyCell);
@@ -616,12 +616,11 @@ class MusicPlayer {
     for (let num = 1; num <= 9; num++) {
         if (isValidMove(grid, row, col, num)) {
             grid[row][col] = num;
-            
+            // place num to row and col
             if (solveSudoku(grid)) {
                 emptyCells.push([row,col,num]); // best
                 return true; // Successfully solved
             }
-            
             grid[row][col] = 0; // Backtrack
         }
     }
