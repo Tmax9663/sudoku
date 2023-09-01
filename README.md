@@ -30,9 +30,12 @@ Visit the live demo of the app: [Sudoku Game App](https://sudoku9.glitch.me/)
 ### Installation
 1. Clone the project repository:
 [git clone](https://github.com/Tmax9663/sudoku.git)
+2. npm install
+3. npm start
+   
 ### Usage
-1. Open `index.html` in your web browser.
-2. Click the "New Game" button to start a new Sudoku puzzle.
+1. Open `http://localhost:5000` in your web browser.
+2. Click the "New Game" button to start a new Sudoku puzzle mode [Easy, Medium, Hard, Expert].
 3. Click on cells to enter numbers and solve the puzzle.
 4. Use the number buttons to input your choices.
 5. Click the "Hint" button for assistance with the next move.
@@ -41,7 +44,6 @@ Visit the live demo of the app: [Sudoku Game App](https://sudoku9.glitch.me/)
 ## Game Instructions
 - Click on an empty cell to select it.
 - Use the number buttons to input your guess.
-- Incorrect numbers will be highlighted in red.
 - Use the "Hint" button for a helpful hint on the next move.
 - The timer will start when you begin a new game.
 - Win the game by correctly filling the entire grid.
@@ -64,9 +66,9 @@ How to Use:
 - Happy Sudoku solving!
 
 ## High Scores
-- View the top high scores on the high score board.
+- View the Top 3 high scores on the high score board for every mode.
 - Save your own high score by solving puzzles quickly.
-- The high score board displays the player's name and time taken.
+- The high score board displays the player's name , time taken and a Load button for loading current player puzzle.
 
 ## Contributing
 Contributions are welcome! If you find any issues or want to improve the app, feel free to submit a pull request.
