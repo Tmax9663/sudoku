@@ -2,14 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Db = require('../models/dbModels');
 
-const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'application/json' ,
-  };
-
 // @routes GET api/posts
 // @dest Get An post
-
 router.get('/', async (req, res) => {
     try {
         const posts = await Db.findAll()

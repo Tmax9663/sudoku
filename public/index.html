@@ -13,35 +13,23 @@
   <body>
     <div id="main">
       <div class="rowDiv">
-        <div class="sTitle">Sudoku Game</div>
+        <div class="sTitle" id="title">Sudoku Game</div>
         <div id="newGame"></div>
+        <span id="speakerSwitch">&#x1f50a;</span>
       </div>
-      <div id="topDiv">
-        <button onclick="startNewGame()">New Game</button>
-        <button onclick="clearPuzzle()">Replay</button>
-        <button onclick="showHint()">Hint</button>
-        <button onclick="displayHighScoreModal()">Score Board</button>
-      </div>
-      <div id="scoreBoard">
-        <div>Time elapsed: <span id="timer">0:00</span></div>
-        <div style="float: right">
-          Your Score: <span id="user-score">0</span>
-        </div>
-      </div>
-      <div id="board">
-        <table id="sudoku-grid"></table>
-        <table id="sudoku-grid-hide" style="display: none"></table>
-        <div id="tbl"></div>
-      </div>
-      <div id="btndiv"></div>
-    </div>
-    <!-- Add a modal for user input -->
+      <!-- Add a modal for user input -->
       <div id="userInputModal" class="modal">
         <div class="modal-content">
           <span class="close" onclick="closeModal()">&times;</span>
-          <label for="user-name">Enter your name:</label>
-          <input type="text" id="user-name" />
-          <button onclick="submitScore()">Submit Score</button>
+          <div id="userScore">
+            <strong>Congratulations!</strong><br>
+            <span>You've solved the Sudoku puzzle!</span><br>
+            <span id="score"></span>
+            <div>
+              <input type="text" id="user-name" placeholder="Enter your name"/>
+              <button onclick="submitScore()">Submit Score</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -49,8 +37,9 @@
       <div id="highScoreModal" class="modal">
         <div class="modal-content">
           <span class="close" onclick="closeModal()">&times;</span>
-          <h2>Scores Board</h2>
+          <h2>Top 3 High Scores Board</h2>
           <div class="colDiv">
+            <!-- High scores and user names will be added here dynamically -->
             <div>
               <h4>Easy High Scores</h4>
               <ol id="easy-high-score-list"></ol>
@@ -81,6 +70,26 @@
           <button onclick="startGame(56,65,'Expert')">Expert</button>
         </div>
       </div>
+
+      <div id="topDiv">
+        <button onclick="startNewGame()">New Game</button>
+        <button onclick="replayPuzzle()" id="btnReplay">Replay</button>
+        <button onclick="showHint()" id="btnHint">Hint</button>
+        <button onclick="displayHighScoreModal()">Score Board</button>
+      </div>
+      <div id="scoreBoard">
+        <div>Time elapsed: <span id="timer">0:00</span></div>
+        <div style="float: right">
+          Your Score: <span id="user-score">0</span>
+        </div>
+      </div>
+      <div id="board">
+        <table id="sudoku-grid"></table>
+        <div id="tbl"></div>
+      </div>
+      <div id="btndiv"></div>
+    </div>
     <script type="text/javascript" src="./js/app.js"></script>
   </body>
 </html>
+  
