@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="theme-color" content="#333" />
+	<link rel="icon" href="./ico/favicon.ico" />
+	<meta name="description" content="Sudoku 數抖庫 (version 1.7.5) Sudoku Game with vanilla javascript created by Tmax" />
+	<link rel="manifest" href="./manifest.json" />
+	<link rel="stylesheet" href="./css/styles.css" />
+	<title>Sudoku Game</title>
+</head>
+
+<body>
+	<div class="topBar">
+		<div id="hamburger" onclick="toggleSidebar()">
+			<div class="bar">≡</div>
+		</div>
+		<div class="sTitle" id="btnTitle" title="about">Sudoku Game</div> 
+    <img id="logo" src="./ico/logo.png" title="autoSolving On" />
+    <span id="speakerSwitch" title="audioOff">&#x1f50a;</span> </div>
+	<div class="sidebar">
+		<ul>
+			<li onclick="displayHighScoreModal()">Score Board</li>
+			<li onclick="themeToggle()" id="theme">LightTheme</li>
+			<li onclick="openAboutModal()">About</li>
+		</ul>
+	</div>
+	<div class="content">
+		<div id="main">
+			<!-- Add a modal for user input -->
+			<div id="userInputModal" class="modal">
+				<div class="modal-content"> <span class="close" onclick="closeModal()">&times;</span>
+					<div id="userScore"> <strong>Congratulations!</strong>
+						<br> <span>You've solved the Sudoku puzzle!</span>
+						<br> <span id="score"></span>
+						<div>
+							<input type="text" id="user-name" placeholder="Enter your name" />
+							<button onclick="submitScore()">Submit Score</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Add a modal for high score display -->
+			<div id="highScoreModal" class="modal">
+				<div class="modal-content"> <span class="close" onclick="closeModal()">&times;</span>
+					<div class="switch-container">
+						<button class="switch-button active" id="btnWorldRankings">World Rankings</button>
+						<button class="switch-button " id="btnUserScores">User Scores</button>
+					</div>
+					<!-- High scores and user names will be added here dynamically -->
+					<div id="topScores">
+						<h2>Top 3 Scores Board</h2>
+						<div class="colDiv">
+							<div>
+								<h4>Easy Mode</h4>
+								<ol id="easy-high-score-list" class="highScore"></ol>
+							</div>
+							<div>
+								<h4>Medium Mode</h4>
+								<ol id="medium-high-score-list" class="highScore"></ol>
+							</div>
+							<div>
+								<h4>Hard Mode</h4>
+								<ol id="hard-high-score-list" class="highScore"></ol>
+							</div>
+							<div>
+								<h4>Expert Mode</h4>
+								<ol id="expert-high-score-list" class="highScore"></ol>
+							</div>
+						</div>
+					</div>
+					<div id="userScores">
+						<h2>Top 10 Scores Board</h2>
+						<ol id="high-score-list" class="highScore"></ol>
+					</div>
+				</div>
+			</div>
+			<div id="newGameModal" class="modal">
+				<div class="modal-content"> <span class="close" onclick="closeModal()">&times;</span>
+					<h2>New Game</h2>
+					<button onclick="startGame(12,25,'Easy')">Easy</button>
+					<button onclick="startGame(26,35,'Medium')">Medium</button>
+					<button onclick="startGame(36,55,'Hard')">Hard</button>
+					<button onclick="startGame(56,65,'Expert')">Expert</button>
+				</div>
+			</div>
+			<!-- Add a modal for About -->
+			<div id="aboutModal" class="modal">
+				<div class="modal-content"> <span class="close" onclick="closeModal()">&times;</span>
+					<div class="rowDiv">
+						<div class="rowDiv">
+							<div>
+								<span class="gameTitle">Sudoku Game</span><br>
+								<span>version 1.4 ©2023</span>
+							</div>
+							<img src="./ico/android-icon-36x36.png" />
+						</div>
+						<a title="whatsApp Me" href="http://api.whatsapp.com/send?phone=60193639663&text=Hello!%20*Mr.%20Teh*%F0%9F%91%8B%0AI%20have%20a%20strong%20interest%20in%20the%20*Sudoku%20Game*%20and%20I%20would%20like%20to%20request%20the%20source%20code%20for%20the%20game.%0A%0ALooking%20forward%20to%20hearing%20from%20you%F0%9F%98%84" target="_blank">
+							<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" width="32px" height="32px">
+								<g>
+									<path style="fill:#2CB742;" d="M0,58l4.988-14.963C2.457,38.78,1,33.812,1,28.5C1,12.76,13.76,0,29.5,0S58,12.76,58,28.5
+									S45.24,57,29.5,57c-4.789,0-9.299-1.187-13.26-3.273L0,58z" />
+													<path style="fill:#FFFFFF;" d="M47.683,37.985c-1.316-2.487-6.169-5.331-6.169-5.331c-1.098-0.626-2.423-0.696-3.049,0.42
+									c0,0-1.577,1.891-1.978,2.163c-1.832,1.241-3.529,1.193-5.242-0.52l-3.981-3.981l-3.981-3.981c-1.713-1.713-1.761-3.41-0.52-5.242
+									c0.272-0.401,2.163-1.978,2.163-1.978c1.116-0.627,1.046-1.951,0.42-3.049c0,0-2.844-4.853-5.331-6.169
+									c-1.058-0.56-2.357-0.364-3.203,0.482l-1.758,1.758c-5.577,5.577-2.831,11.873,2.746,17.45l5.097,5.097l5.097,5.097
+									c5.577,5.577,11.873,8.323,17.45,2.746l1.758-1.758C48.048,40.341,48.243,39.042,47.683,37.985z" /> 
+								</g>
+							</svg>
+						</a>
+					</div>
+					<hr>
+					<div id="aboutContent" style="font-size: 14px;padding: 3px;"> </div>
+				</div>
+			</div>
+			<div id="themeModal" class="modal">
+				<div class="modal-content"> <span class="close" onclick="closeModal()">&times;</span>
+					<div class="colDiv">
+						<h2>Select Theme Color</h2>
+						<select id="themeColorSelector"></select>
+						<div class="rowDiv">
+							<div class="colDiv" style="width:150px">
+								<label for="backgroundColorPicker">Background Color </label><input type="color" class="themeColorModal" id="backgroundColorPicker">
+								<label for="foregroundColorPicker">Foreground Color</label><input type="color" class="themeColorModal" id="foregroundColorPicker">
+								<label for="themeColorPicker">Theme Color</label><input type="color" class="themeColorModal" id="themeColorPicker">
+								<label for="theme-name">Theme Name</label><input type="text" id="theme-name" placeholder="Theme name" style="color:#333;background-color: #e1e1e1;"/>
+							</div>
+							<div class="colDiv" style="width:150px">
+								<div id="testForeground" class="testBackground">Test 123</div>
+								<div id="testTheme" class="testBackground">Test 123</div>
+							</div>
+						</div>
+						<button id="saveButton">Save</button>
+						
+					</div>
+				</div>
+			</div>
+			<div id="topDiv">
+				<button onclick="startNewGame()">New Game</button>
+				<button onclick="replayPuzzle()" id="btnReplay">Replay</button>
+				<button onclick="showHint()" id="btnHint">Hint</button>
+				<button onclick="undo()">Undo</button>
+			</div>
+			<div id="scoreBoard">
+				<div>Time elapsed: <span id="timer">0:00</span></div>
+				<div style="float: right"> Your Score: <span id="user-score">0</span> </div>
+			</div>
+			<div id="board">
+				<table id="sudoku-grid"></table>
+			</div>
+			<div id="btndiv"></div>
+		</div>
+	</div>
+	<script type="text/javascript" src="./js/appClass.js"></script>
+</body>
+</html>

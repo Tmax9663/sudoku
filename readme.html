@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Markdown README Viewer</title>
+    <!-- Include necessary CSS styles for rendering Markdown -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
+</head>
+<body>
+    <!-- Container for displaying Markdown content -->
+    <div class="markdown-body" id="markdown-content"></div>
+
+    <!-- Include the markdown-it library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.0.4/markdown-it.min.js"></script>
+
+    <!-- Your JavaScript code will go here -->
+    <script>
+        // JavaScript code to fetch and render README.md content
+        document.addEventListener("DOMContentLoaded", function () {
+            // Fetch the README.md file
+            fetch('./README.md')
+                .then(response => response.text())
+                .then(mdContent => {
+                    // Create a new markdown-it instance
+                    const md = window.markdownit();
+                    // Convert Markdown to HTML
+                    const htmlContent = md.render(mdContent);
+                    // Display the HTML content in the designated container
+                    document.getElementById('markdown-content').innerHTML = htmlContent;
+                })
+                .catch(error => {
+                    console.error('Error fetching README.md:', error);
+                });
+        });
+    </script>
+</body>
+</html>
