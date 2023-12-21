@@ -45,6 +45,7 @@ tr:nth-child(3n+1) td {
     color:red;
     text-align: center;
     cursor: pointer;
+    border-radius: 3px;
 }
 input{
     border: none;
@@ -144,9 +145,11 @@ td.active {
 @keyframes highlightWin {
     from {
         background-color: #333;
+        border-radius: 60px;
     }
     to {
         background-color: #dcdcdc; /* lite white background for highlight */
+        border-radius: 0;
     }
 }
 
@@ -264,5 +267,5 @@ li:hover{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    line-height: 2;
+    line-height: 1.6;
 }

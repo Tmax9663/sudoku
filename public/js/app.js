@@ -21,6 +21,7 @@ let hintCells=[];
 let tempHintCells=[];
 let hintCount;
 const maxHintCount=5;
+const topLimit=3;
 let soundOn=true;
 //const assetFolder='https://cdn.glitch.global/ca5aa811-8109-4d0b-bfe3-c16115da55f4';
 const assetFolder='../resources';
@@ -461,23 +462,28 @@ const displayHighScoreModal=()=>{
 
 // Update high score board with user names
 const updateHighScoreBoard=()=>{
+    let easy=0,medium=0,hard=0,expert=0;
     const highScores =highScoresLoaded;
     document.getElementById('easy-high-score-list').innerHTML='';
     document.getElementById('medium-high-score-list').innerHTML='';
     document.getElementById('hard-high-score-list').innerHTML='';
     document.getElementById('expert-high-score-list').innerHTML='';
     highScores.map(score => {
-        if(score.level==='Easy'){
+        if(score.level==='Easy' && easy<topLimit){
             document.getElementById('easy-high-score-list').innerHTML+=`<li><button class="scoreBtn" onclick="loadPuzzle('${score.id}')">Load</button><span class="scoreName">${score.name}: </span><span class="scoreResult">${score.score}</span></li>`;
+            easy++;
         }
-        if(score.level==='Medium'){
+        if(score.level==='Medium' && medium<topLimit){
             document.getElementById('medium-high-score-list').innerHTML+=`<li><button class="scoreBtn" onclick="loadPuzzle('${score.id}')">Load</button><span class="scoreName">${score.name}: </span><span class="scoreResult">${score.score}</span></li>`;
+            medium++;
         }
-        if(score.level==='Hard'){
+        if(score.level==='Hard' && hard<topLimit){
             document.getElementById('hard-high-score-list').innerHTML+=`<li><button class="scoreBtn" onclick="loadPuzzle('${score.id}')">Load</button><span class="scoreName">${score.name}: </span><span class="scoreResult">${score.score}</span></li>`;
+            hard++;
         }
-        if(score.level==='Expert'){
+        if(score.level==='Expert' && expert<topLimit){
             document.getElementById('expert-high-score-list').innerHTML+=`<li><button class="scoreBtn" onclick="loadPuzzle('${score.id}')">Load</button><span class="scoreName">${score.name}: </span><span class="scoreResult">${score.score}</span></li>`;
+            expert++;
         }
     })
 }
